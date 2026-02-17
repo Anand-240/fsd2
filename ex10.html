@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    function check(){
+        var username = document.getElementById("userid").value;
+        var password = document.getElementById("password").value;
+        var confirmpassword = document.getElementById("confirm-password").value;
+        var msg = "";
+        if(username.length <=0) {
+            alert("Username cannot be empty");
+        }
+        if(password.length <=0) {
+            alert("Password cannot be empty");
+        }
+
+        if(password.length <=0 && username.length <=0) {
+            alert("Username and Password cannot be empty");
+        }
+
+        if(password != confirmpassword) {
+            alert("Password and Confirm Password do not match");
+        }
+
+        if(password = confirmpassword) {
+            alert("Registration successful");
+        }
+
+        
+    }
+    
+</script>
+<body>
+    <form action="" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="userid" name="username"><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+        <label for="confirm-password">confirm-password</label>
+        <input type="password" id="confirm-password" name="confirm-password"><br><br>
+
+
+        <input type="submit" value="Submit" onclick="check();">
+        
+
+        
+    </form>
+</body>
+</html>
