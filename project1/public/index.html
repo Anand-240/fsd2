@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Products in INR</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #buyBtn {
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 style="text-align: center;">List of Products</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>S.NO</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Price (INR)</th>
+                <th>Rating</th>
+                <th>Stock</th>
+                <th>Add to Cart</th>
+            </tr>
+        </thead>
+
+        <tbody id="product-list"></tbody>
+    </table>
+
+    <h2 id="total">Total: ₹0.00</h2>
+
+    <button id="buyBtn" onclick="buyProduct()" style="display: none;">
+        Buy
+    </button>
+
+    <script>
+
+        const URL = "https://dummyjson.com/products";
+        const API_KEY = "b95782492888cf69241be16f";
+
+        let products = [];
+        let cart = [];
+        let rate = 0;
+
+        async function LoadProduct() {
+            try {
+                const res = await fetch(URL);
+                const data = await res.json();
+
+                const currencyRes = await fetch(
+                    `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`
+                );
+
+                const currencyData = await currencyRes.json();
+
+                rate = currencyData.conversion_rates.INR;
+                products = data.products;
+
+                let rows = "";
+
+                products.map((i, index) => {
+                    let inrPrice = i.price * rate;
+
+                    rows += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${i.title}</td>
+                            <td>${i.category}</td>
+                            <td>₹${inrPrice.toFixed(2)}</td>
+                            <td>${i.rating}</td>
+                            <td>${i.stock}</td>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    onchange="updateCart(${i.id})"
+                                >
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById("product-list").innerHTML = rows;
+
+            } catch (error) {
+                console.log("Error:", error);
+            }
+        }
+
+        function updateCart(id) {
+            let product = products.find(i => i.id === id);
+            let existing = cart.find(i => i.id === id);
+
+            if (existing) {
+                cart = cart.filter(i => i.id !== id);
+            } else {
+                cart.push(product);
+            }
+
+            let total = 0;
+
+            cart.forEach(i => {
+                total += i.price * rate;
+            });
+
+            document.getElementById("total").innerText =
+                `Total: ₹${total.toFixed(2)}`;
+
+            if (cart.length > 0) {
+                document.getElementById("buyBtn").style.display = "block";
+            } else {
+                document.getElementById("buyBtn").style.display = "none";
+            }
+        }
+
+        function buyProduct() {
+            let total = 0;
+
+            cart.forEach(i => {
+                total += i.price * rate;
+            });
+
+            alert(
+                `Order placed successfully!\nTotal: ₹${total.toFixed(2)}`
+            );
+        }
+
+        LoadProduct();
+
+    </script>
+
+</body>
+</html>
